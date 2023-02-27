@@ -1,0 +1,153 @@
+);
+
+--algebra relationala
+--Sa se afiseze numele și prenumele persoanelor de contact(medicilor) femei  din cadrul unui cabinet 
+--care lucrează la secție de Chirurgie  
+select medici.nume, medici.prenume 
+from medici
+join cabinet on (medici.id_medic = cabinet.id_persoana_contact)
+JOIN SECTIE_CLINICA ON SECTIE_CLINICA.COD_SECTIE = cabinet.ID_SECTIE
+where medici.sex = 'Femeie' and medici.nationalitate = 'romana' AND sectie_clinica.denumire like 'Chirurgie';
+--11
+--numele clinicilor au codul postal 105600
+select unique concat (concat('Numele clinicii este ', clinica.denumire), 
+concat(' si are adresa ', clinica.adresa)) as "Rezultat"
+from clinica
+where clinica.cod_postal = '105600';
+
+--afisati numele si prenumele medicilor barbati nascuti in anul 1960
+select medici.nume, medici.prenume 
+from medici
+where medici.sex = 'Barbat' and extract(year from medici.data_nasterii) = 1959;
+
+--afisati numele si prenumele medicilor barbati nascuti in anul 1960 care contin litera i in nume
+select medici.nume, medici.prenume 
+from medici
+where medici.sex = 'Barbat' and extract(year from medici.data_nasterii) = 1959 and medici.nume like '%i%';
+
+--afisare asistenti medicali care sunt responsabili pentru saloane de internati
+-- si care sunt asistenti sefi peste cabinete de la etajul 1
+select concat (concat(asistenti_medicali.nume, ' '), asistenti_medicali.prenume) as "Persoanl asistent"
+from asistenti_medicali 
+where asistenti_medicali.id_asistent in 
+(select id_responsabil 
+from saloane
+where saloane.id_responsabil in
+(select cabinet.id_asistent_sef
+from cabinet
+where cabinet.etaj = 1)
+);
+select *
+from servicii;
+--pentru fiecare serviciu medical sa se afiseze ce pret care, precum si 
+--suma totala a preturilor
+select servicii.id_serviciu, servicii.nume,
+    SUM(DECODE(servicii.id_serviciu, 1, servicii.pret)) Serviciu1,
+    SUM(DECODE(id_serviciu, 2, pret)) Serviciu2,
+    SUM(DECODE(id_serviciu, 3, pret)) Serviciu3,
+    SUM(DECODE(id_serviciu, 4, pret)) Serviciu4,
+    SUM(DECODE(id_serviciu, 5, pret)) Serviciu5,
+    sum(servicii.pret) as Total
+from servicii
+group by servicii.id_serviciu, servicii.NUME;
+
+--sa se pacientii care sunt programati peste 6 luni, ordonati dupa nume
+select nume, prenume
+from pacienti
+where pacienti.id_pacient in 
+(select id_pacient 
+from programari_consult 
+where months_between (sysdate, programari_consult.data_consult)=6
+)
+order by pacienti.nume;
+
+--
+select distinct internati.nume, internati.prenume 
+from internati
+join saloane on internati.id_internat = saloane.id_internat1 or internati.id_internat = saloane.id_internat2,
+case 
+    when saloane.id_saloane = 1 then 'Cazati in 1'
+end as Cazari
+from saloane;
+
+select nume_categorie_personal,
+case id_categorie
+    when 1  then 'Medic la clinica 1'
+    when 2 then 'Asistenti medicali la clinica 1'
+    when 3 then 'Brancardieri la clinica 1'
+    when 4 then 'tesa la clinica 1'
+     when 12  then 'Medic la clinica 2 '
+    when 22 then 'Asistenti medicali la clinica 2'
+    when 32 then 'Brancardieri la clinica 2'
+    when 42 then 'tesa la clinica 2'
+end clasificare
+from categorii_de_personal
+order by
+nume_categorie_personal;
+
+from categorii_de_personal;
+
+--serviciile cu pret mai mare decat cel mediu
+with temp(avg_pret) as (
+select avg(pret)
+from servicii )
+select nume, pret
+from servicii, temp
+where servicii.pret>temp.avg_pret
+order by nume;
+
+--medicii care nu sunt sefi de sectie
+select medici.id_medic,  medici.prenume, NVL(TO_CHAR(medici.nume), 'Not assigned') "Schimbare"
+from medici
+join cabinet
+on
+cabinet.id_persoana_contact = medici.id_medic
+where cabinet.etaj = 1;
+order by nume;
+
+--id-ul medicilor, numele acestora, sectia la care lucreaza 
+select medici.id_medic, medici.nume, cabinet.numar_sala, sectie_clinica.denumire, clinica.denumire
+from medici
+inner join cabinet on cabinet.id_persoana_contact = medici.id_medic
+inner join sectie_clinica on cabinet.id_sectie =  sectie_clinica.cod_sectie
+inner join clinica on sectie_clinica.id_clinica = clinica.id_clinica 
+where clinica.id_clinica = 1
+order by medici.nume, medici.id_medic , cabinet.numar_sala, sectie_clinica.denumire, clinica.denumire;
+
+---division
+--sa se obtina asistentii care au post de asistent sef in cabinete care contin la nume a doua si a treia litera
+--'ab'
+select *
+from asistenti_medicali
+where not exists 
+(select id_asistent_sef
+from cabinet
+where asistenti_medicali.id_asistent = cabinet.id_asistent_sef
+minus
+select id_responsabil 
+from laboratoare
+where nume like '_ab%');
+
+--14.Crearea unei vizualizări compuse.
+--Dați un exemplu de operație LMD permisă pe vizualizarea respectivă și 
+create view servicii_cu_pret_peste_avg as select servicii.nume, servicii.pret
+from servicii
+join sectie_clinica on servicii.id_serviciu = sectie_clinica.cod_sectie
+where servicii.pret > (select avg(servicii.pret) from servicii);
+--un exemplu de operație LMD nepermisă.
+
+insert into servicii_cu_pret_peste_avg values ('Servicii clienti', 300);
+
+--15
+create index idx on pacienti ( nume, prenume,  asigurat)
+where PACIENTI.nume like 'A%' and PACIENTI.asigurat = 1;
+
+--16 outer join
+
+select clinica.denumire, clinica.adresa
+from clinica
+outer join sectie_clinica on (sectie_clinica.cod_sectie = clinica.id_clinica)
+outer join saloane on (saloane.id_salon = cabinet.id_cabinet)
+outer join internati on (saloane.id_internat1 = internati.id_internat )
+or (saloane.id_internat2 = internati.id_internat)
+where internati.sex = 'Barbat';

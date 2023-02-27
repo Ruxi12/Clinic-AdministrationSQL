@@ -1,0 +1,502 @@
+-----------------------------CREARE CLINICA ------------
+CREATE TABLE CLINICA
+                        (id_clinica NUMBER(5) CONSTRAINT PKEY_CLINICA PRIMARY KEY,
+                         denumire VARCHAR(100) CONSTRAINT denumire_clinica NOT NULL,
+                         adresa VARCHAR(100) CONSTRAINT adresa_clinica NOT NULL,
+                         telefon VARCHAR(20) CONSTRAINT telefon_clinica NOT NULL,
+                         mail VARCHAR(50) UNIQUE,
+                         fax VARCHAR(50),
+                         cod_postal VARCHAR(6)
+                        );
+SELECT *
+FROM CLINICA;
+INSERT INTO CLINICA
+VALUES (1, 'Sanador Buzesti', 'Strada Dr. Iacob Felix 32, Bucuresti ', '+4021–314.28.63',
+       'secretariat@sanador.buzesti.ro', '+4021–314.28.63','011038');
+INSERT INTO CLINICA
+VALUES (2,'Helpsana','Strada Henri Coandă 11, Câmpina ', '+4021-312.49.48',
+        'helpsana@clinica.helpsana.ro','+4021-312.49.48','105600');
+INSERT INTO CLINICA
+VALUES (3,'Medical Care','Strada Grigore Nicolae nr 1, Câmpina', '+0421-305.38.10',
+        'medical_care@yahoo.com','+0421-305.38.10','105600');
+UPDATE CLINICA
+SET
+    ADRESA = 'Strada Dr. Iacob Felix 32, Bucuresti'
+where 
+    id_clinica = 1;
+update CLINICA
+SET 
+    ADRESA =  'Strada Grigore Nicolae nr 1, Câmpina'
+WHERE 
+    id_clinica = 3;
+
+INSERT INTO CLINICA
+VALUES (4, 'Medicover', 'Strada Mihai Eminescu 7-9, Ploiești', 
+'+4021-314.35.89', 'secretariat@medicover.ploiesti.com','+4021-314.35.89','030018');
+INSERT INTO CLINICA
+VALUES(5, 'Lotus','Strada Avrig 14, Ploiesti', '+4021–313.43.36', 'spital_lotus@secretaria.medicover.com','+4021–313.43.36','100011');
+select *
+from clinica;
+------------------------------------SECTIE-----------------------------          
+CREATE TABLE SECTIE_CLINICA(cod_sectie NUMBER(5) PRIMARY KEY,
+                    denumire VARCHAR(100)  NOT NULL,
+                    id_clinica NUMBER(5),
+                    FOREIGN KEY(id_clinica) REFERENCES CLINICA(id_clinica)
+                    );
+Select *
+from SECTIE_CLINICA;
+
+INSERT INTO SECTIE_CLINICA
+VALUES(20,'Chirurgie', 1);
+
+INSERT INTO sectie_clinica
+VALUES (21, 'Ortopedie', 1);
+
+INSERT INTO sectie_clinica
+VALUES(22,'Oncologie', 1);
+
+INSERT INTO SECTIE_clinica
+VALUES(23,'Pediatrie', 2);
+
+INSERT INTO SECTIE_clinica
+VALUES (24,'Neonatologie',2);
+
+INSERT INTO SECTIE_clinica
+VALUES (25,'Ortopedie',2);
+
+Select *
+from SECTIE_CLINICA;
+---------------------------------CATEGORII DE PERSONAL--------
+CREATE TABLE CATEGORII_DE_PERSONAL (id_categorie NUMBER(5) PRIMARY KEY,
+                                    nume_categorie_personal VARCHAR(5) NOT NULL,
+                                    id_clinica NUMBER(5),
+                                    FOREIGN KEY(id_clinica) REFERENCES CLINICA(id_clinica)
+                                    );
+                                    
+ALTER TABLE CATEGORII_DE_PERSONAL MODIFY NUME_CATEGORIE_PERSONAL VARCHAR(50);
+select * 
+from categorii_de_personal;
+INSERT INTO categorii_de_personal
+VAlUES (1, 'Medici', 1);
+INSERT INTO categorii_de_personal
+VAlUES (2, 'Asistenti medicali', 1);
+INSERT INTO CATEGORII_DE_PERSONAL
+VALUES (3, 'BRANCARDIERI', 1);
+INSERT INTO CATEGORII_DE_PERSONAL
+VALUES (4, 'TESA', 1);
+INSERT INTO CATEGORII_DE_PERSONAL
+VALUES (12, 'Medici', 2);
+INSERT INTO CATEGORII_DE_PERSONAL
+VAlUES (22, 'Asistenti medicali',2 );
+INSERT INTO CATEGORII_DE_PERSONAL
+VALUES (32, 'Brancardieri', 2);
+INSERT INTO CATEGORII_DE_PERSONAL
+VALUES (42, 'TESA',2 );
+------------------------MEDICI---------
+CREATE TABLE MEDICI (id_medic number(5) primary key,
+                     nume VARCHAR(100) not null,
+                     prenume varchar(150) not null,
+                     data_nasterii date not null, 
+                     sex varchar (10) not null,
+                     telefon varchar (13) unique,
+                     mail varchar(30) unique,
+                     nationalitate varchar(30) not null,
+                     id_categorie number(5),
+                     foreign key (id_categorie) references categorii_de_personal(id_categorie) );
+alter table medici modify mail varchar (50) ;
+select *
+from medici;
+update
+medici
+set 
+
+
+insert into medici
+values (100, 'Ionescu', 'Cristina', TO_DATE('12-04-1970','DD-MM-YYYY'), 
+        'Femeie', '+40722592883', 'ionescu_cristina3@sanador.com', 'romana', 1);
+insert into medici
+values (101, 'Mociornita', 'Georgel', TO_DATE('19-05-1959','DD-MM-YYYY'), 
+        'Barbat', '+40734769001', 'medic_mociornita.georgel@sanador.com', 'romana', 1);
+insert into medici
+values (102, 'Georgescu', 'Ioan Marcel', TO_DATE('22-01-1969','DD-MM-YYYY'), 
+        'Barbat', '+40756769441', 'georgescu_ioan.marcel@sanador.com', 'romana', 1);
+insert into medici
+values (103, 'Margeleanu', 'Narcisa Ioana', TO_DATE('03-09-1989','DD-MM-YYYY'), 
+        'Femeie', '+40770142772', 'margealnu.ioana-narcisa@sanador.com', 'romana', 1);
+insert into medici
+values (104, 'Grosu', 'Maricica', TO_DATE('12-04-1960','DD-MM-YYYY'), 
+        'Femeie', '+40722820780', 'grosu_maricica@sanador.com', 'romana', 1);
+        
+------------------------ASISTENTI MEDICALI---------------
+CREATE TABLE ASISTENTI_MEDICALI (id_asistent number(5) primary key,
+                                 nume varchar(100) not null,
+                                 prenume varchar (150) not null,
+                                 principal varchar(5) not null,
+                                 data_nasterii date not null, 
+                                 sex varchar (10) not null,
+                                 telefon varchar (13) unique,
+                                 mail varchar(30) unique,
+                                 nationalitate varchar(30) not null,
+                                 id_categorie number(5),
+                                 foreign key (id_categorie) references categorii_de_personal(id_categorie));
+alter table asistenti_medicali modify mail varchar (50) ;
+select *
+from asistenti_medicali;
+insert into asistenti_medicali
+values (200, 'Marcu', 'Cristina','True', TO_DATE('19-07-1978','DD-MM-YYYY'), 
+        'Femeie', '+40723782880', 'marcu_cristina3@asis.sanador.com', 'romana', 2);
+insert into asistenti_medicali
+values (201, 'Karakantas', 'Stavros','True', TO_DATE('24-07-1997','DD-MM-YYYY'), 
+        'Barbat', '+40743967301', 'karakantas.stavros@asis.sanador.com', 'greaca', 2);
+insert into asistenti_medicali
+values (202, 'Blindariu', 'Ioan Mihnea','False', TO_DATE('29-05-1988','DD-MM-YYYY'), 
+        'Barbat', '+40722300241', 'blindariu.ioan-mihnea@asis.sanador.com', 'romana', 2);
+insert into asistenti_medicali
+values (203, 'Dovanca', 'Mihai George','False', TO_DATE('03-04-1969','DD-MM-YYYY'), 
+        'Barbat', '+40722642700', 'dovanca.mihai-george@asis.sanador.com', 'romana', 2);
+insert into asistenti_medicali
+values (204, 'Ionescu', 'Maricica','False', TO_DATE('17-02-1960','DD-MM-YYYY'), 
+        'Femeie', '+40760800789', 'ionescu_maricica@asis.sanador.com', 'romana', 2);
+insert into asistenti_medicali
+values (205, 'Pavelescu', 'Maricica','False', TO_DATE('10-03-1960','DD-MM-YYYY'), 
+        'Femeie', '+40760300789', 'pavelescu.maricica@asis.sanador.com', 'romana', 2);
+insert into asistenti_medicali
+values (206, 'Marculescu', 'Ioana','False', TO_DATE('11-03-1960','DD-MM-YYYY'), 
+        'Femeie', '+40760300799', 'marculescu.ioana@asis.sanador.com', 'romana', 2);
+insert into asistenti_medicali
+values (207, 'Maiorescu', 'Daniela','False', TO_DATE('10-03-1960','DD-MM-YYYY'), 
+        'Femeie', '+40768300789', 'maiorescu.daniela@asis.sanador.com', 'romana', 2);
+insert into asistenti_medicali
+values (208, 'Stoica', 'Dobre','False', TO_DATE('10-09-1960','DD-MM-YYYY'), 
+        'Barbat', '+40760300787', 'stoica.dobre@asis.sanador.com', 'romana', 2);
+CREATE TABLE BRANCARDIERI (id_brancardier number(5) primary key,
+                                 nume varchar(100) not null,
+                                 prenume varchar (150) not null,
+                                 data_nasterii date not null, 
+                                 sex varchar (10) not null,
+                                 telefon varchar (13) unique,
+                                 mail varchar(50) unique,
+                                 nationalitate varchar(30) not null,
+                                 id_categorie number(5),
+                                 foreign key (id_categorie) references categorii_de_personal(id_categorie));
+select *
+from BRANCARDIERI;
+insert into BRANCARDIERI
+values (300, 'Popescu', 'Georgeta', TO_DATE('01-12-1970','DD-MM-YYYY'), 
+        'Femeie', '+40720598883', 'popescu.georgeta@br.sanador.com', 'romana', 3);
+insert into BRANCARDIERI
+values (301, 'Sora', 'Andrei Cristian', TO_DATE('29-09-1973','DD-MM-YYYY'), 
+        'Barbat', '+40744769001', 'sora.andrei-cristian@br.sanador.com', 'romana', 3);
+insert into BRANCARDIERI
+values (302, 'Mohammed', 'Abdul', TO_DATE('22-04-1969','DD-MM-YYYY'), 
+        'Barbat', '+40756769001', 'mohammed.abdul@br.sanador.com', 'turca', 3);
+insert into BRANCARDIERI
+values (303, 'Hussein', 'Abdul', TO_DATE('09-09-1999','DD-MM-YYYY'), 
+        'Barbat', '+40720142772', 'hussein.abdul@br.sanador.com', 'egipteana', 3);
+insert into BRANCARDIERI
+values (304, 'Zorba', 'Alexandros', TO_DATE('05-04-1966','DD-MM-YYYY'), 
+        'Barbat', '+40762820780', 'zorba.alexandros@br.sanador.com', 'greaca', 3);
+------------------------TESA--------------------------
+CREATE TABLE TESA (id_tesa number(5) primary key,
+                                 nume varchar(100) not null,
+                                 prenume varchar (150) not null,
+                                 functie varchar (150) not null,
+                                 data_nasterii date not null, 
+                                 sex varchar (10) not null,
+                                 telefon varchar (13) unique,
+                                 mail varchar(50) unique,
+                                 nationalitate varchar(30) not null,
+                                 id_categorie number(5),
+                                 foreign key (id_categorie) references categorii_de_personal(id_categorie));
+select *
+from tesa;
+insert into tesa
+values (400, 'Dobrii', 'Madalina Natalia','Director executiv', TO_DATE('29-12-1978','DD-MM-YYYY'), 
+        'Femeie', '+40723782889', 'dobrii.madalina-natalia@tesa.sanador.com', 'romana', 4);
+insert into tesa
+values (401, 'Pisalita', 'Marian','Contabil', TO_DATE('07-07-1997','DD-MM-YYYY'), 
+        'Barbat', '+40743977301', 'pisalita.marian@tesa.sanador.com', 'greaca', 4);
+insert into tesa
+values (402, 'Bocioaca', 'Sergiu Vasile','Contabil', TO_DATE('10-05-1958','DD-MM-YYYY'), 
+        'Barbat', '+40722399241', 'bociaoca.sergiu-vasile@tesa.sanador.com', 'romana', 4);
+insert into tesa
+values (403, 'Dovanca', 'Serban Daniel','False', TO_DATE('03-08-1988','DD-MM-YYYY'), 
+        'Barbat', '+40722642722', 'dovanca.serban-daniel@tesa.sanador.com', 'romana', 4);
+insert into tesa
+values (404, 'Tabarca', 'Marilena','Economist', TO_DATE('19-03-1969','DD-MM-YYYY'), 
+        'Femeie', '+40760800782', 'tabarca.marilena@tesa.sanador.com', 'romana', 4);
+update TESA
+SET 
+    FUNCTIE =  'Director economic'
+WHERE 
+    id_TESA = 403;    
+------------------------CABINET----------------
+CREATE TABLE CABINET ( id_cabinet NUMBER(5) PRIMARY KEY,
+                       nume VARCHAR(100) NOT NULL,
+                       numar_sala NUMBER(5),
+                       etaj NUMBER(5),
+                       id_persoana_contact number (5),
+                       FOREIGN KEY (id_persoana_contact) REFERENCES MEDICI(id_medic),
+                       id_asistent_sef number (5),
+                       foreign key(id_asistent_sef) references ASISTENTI_MEDICALI(id_asistent),
+                       id_sectie number (5),
+                       foreign key (id_sectie) references SECTIE_clinica(cod_sectie) );
+                       
+update cabinet
+set nume = 'Cabinet general'
+where cabinet.id_cabinet in 
+(select id_cabinet 
+from cabinet
+where etaj = 1);
+
+select *
+from cabinet; 
+insert into cabinet
+values (1, 'Cabinet Chirurgie 1', 100, 1, 100, 200, 20);
+insert into cabinet 
+values (2, 'Cabinet Ortopedie', 101, 1, 101, 201, 21);
+insert into cabinet 
+values (3, 'Cabinet Oncologie Principal', 102, 1, 102, 202, 22);
+insert into cabinet 
+values (4, 'Cabinet Oncologie Secundar', 203, 2, 103, 203, 22);
+insert into cabinet 
+values (5, 'Cabinet Chirurgie Secundar', 300, 3, 104, 204, 20);
+select *
+from medici
+join cabinet 
+on medici.id_medic = cabinet.id_persoana_contact;
+--where id_cabinet = 1;
+--where id_cabinet = 1;
+--------------------------LABORATOARE-------
+CREATE TABLE LABORATOARE( id_laborator number (5) primary key,
+                          nume varchar(150) not null,
+                          numar_sala number(5) unique,
+                          etaj number (5),
+                          id_cabinet number (5),
+                          foreign key (id_cabinet) references CABINET(id_cabinet),
+                          id_responsabil number (5),
+                          foreign key (id_responsabil) references ASISTENTI_MEDICALI(id_asistent)
+                        
+);
+select *
+from laboratoare;
+insert into laboratoare
+values (1, 'Laborator EKG', 130, 1, 1, 205);
+insert into laboratoare
+values (2, 'Analize sange 1', 231, 2, 2, 206);
+insert into laboratoare
+values (3, 'Analize Sange-Tiroida', 232, 2, 3, 207);
+insert into laboratoare
+values (4, 'Analize Sange-VSH', 331, 3, 4, 208);
+insert into laboratoare
+values (5, 'Analize Sange-TGO-TGP', 332, 3, 4, 205);
+CREATE TABLE PACIENTI (id_pacient number(5) primary key,  --pacienti veniti doar pentru consult 
+                       nume varchar(50) not null, 
+                       prenume varchar(50) not null, 
+                       asigurat number(5) -----0 pentru false, 1 pentru true
+                       );
+ALTER TABLE PACIENTI 
+ADD numar_telefon number(5) unique;
+alter table pacienti modify numar_telefon varchar(15);
+alter table pacienti 
+add 
+select *
+from pacienti;
+insert into pacienti
+values (1, 'Angelescu', 'Marcel', 1, '+40720300400');
+insert into pacienti
+values (2, 'Ciuciu', 'Viorel', 0, '+40720300401');
+insert into pacienti
+values (3, 'Stoian', 'Daniel Marian', 0, '+40720300402');
+insert into pacienti
+values (4, 'Ahmer', 'Cristina', 1, '+40720300403');
+insert into pacienti
+values (5, 'Popescu', 'Ioan', 1, '+40720300404');  -----------
+create table INTERNATI ( id_internat number(5) primary key,
+                         nume varchar (50) not null,
+                         prenume varchar(50) not null,
+                         sex varchar (10) not null,
+                         asigurat number(5),
+                         telefon varchar(15) unique not null);
+select *
+from internati;
+
+alter table internati MODIFY nume varchar (50) ;
+insert into internati 
+values (1, 'Angelescu', 'Marcel','Barbat', 1, '+40720300400');
+insert into internati 
+values (2, 'Moineac', 'Vasilel','Barbat', 1, '+40720300405');
+insert into internati 
+values (3, 'Barbulescu', 'Tudorel','Barbat', 0, '+40720300406');
+insert into internati 
+values (4, 'Sorescu', 'Marian','Barbat', 0, '+40720300407');
+insert into internati 
+values (5, 'Sendroiu', 'Cristian','Barbat', 1, '+40720300408');
+insert into internati 
+values (6, 'Mat', 'Marcel','Barbat', 1, '+40720300409');
+insert into internati 
+values (7, 'Rat', 'Cosmin','Barbat', 1, '+40720300410');
+insert into internati 
+values (8, 'Lazarescu', 'Liviu','Barbat', 1, '+40720300411');
+insert into internati 
+values (9, 'Puiu', 'Cristian','Barbat', 1, '+40720300412');
+insert into internati 
+values (10, 'Matei', 'Alexandru','Barbat', 1, '+40720300413');
+
+-------------------------SALOANE-----------
+CREATE TABLE SALOANE (id_salon number (5) primary key,
+                    numar_sala number (5) unique not null,
+                    etaj number (5), 
+                    id_cabinet number (5),
+                    foreign key (id_cabinet) references CABINET(id_cabinet),
+                    id_internat1 number(5) unique,
+                    foreign key (id_internat1) references INTERNATI(id_internat),
+                    id_internat2 number(5) unique,
+                    foreign key (id_internat2) references INTERNATI(id_internat),
+                    id_responsabil number(5),
+                    foreign key (id_responsabil) references asistenti_medicali(id_asistent)
+                    );
+select *
+from saloane;
+insert into saloane
+values (1, 120, 1, 1, 1, 2, 200);
+delete
+from saloane 
+where id_salon = 1;
+insert into saloane
+values (2, 122, 1, 2, 3, 4, 201);
+insert into saloane
+values (3, 123, 1, 3, 5, 6, 202);
+insert into saloane
+values (4, 400, 4, 4, 7, 8, 203);
+insert into saloane
+values (5, 401, 4, 5, 9, 10, 204);
+-------------------------PROGRAMARI---------------
+CREATE TABLE PROGRAMARI_CONSULT (id_programare number(5) primary key,
+                         data_consult timestamp(0) not null,
+                         id_pacient number(5) ,
+                         foreign key (id_pacient) references pacienti(id_pacient),
+                         id_medic number(5) ,
+                         foreign key(id_medic) references medici(id_medic),
+                         id_cabinet number(5) ,
+                         foreign key(id_cabinet) references cabinet(id_cabinet)
+                         );
+alter table programari_consult modify data_consult timestamp(0);
+drop table programari_consult;
+select *
+from programari_consult;
+
+insert into programari_consult
+values(1, TO_DATE('12-05-2022 12:30','DD-MM-YYYY hh:mi'), 1,100, 1 );
+delete
+from programari_consult
+where 
+id_proPROGgramare = 2;
+insert into programari_consult
+values(2, TO_DATE('11-05-2022 12:30','DD-MM-YYYY:hh:mi'), 2,101, 2 );
+insert into programari_consult
+values(3, TO_DATE('12-05-2022 11:30:00','DD-MM-YYYY:hh:mi:ssam'), 3,102, 3 );
+insert into programari_consult
+values(4, TO_DATE('12-05-2022 10:30:00','DD-MM-YYYY:hh:mi:ssam'), 4,102, 3 );
+insert into programari_consult
+values(5, TO_DATE('12-05-2022 09:30:00','DD-MM-YYYY:hh:mi:ssam'), 5,104, 5 );
+
+---------------------------PROGRAMARE-------------------
+create table PROGRAMARI_ANALIZE( id_analiza number(5) primary key,
+                                 data_analize timestamp(0) not null,
+                                 id_pacient number(5) ,
+                             foreign key (id_pacient) references pacienti(id_pacient),
+                             id_asistent number(5) ,
+                             foreign key(id_asistent) references asistenti_medicali(id_asistent),
+                             id_laborator number(5) ,
+                             foreign key(id_laborator) references laboratoare(id_laborator)
+                             );
+                             
+
+select *
+from programari_analize;
+insert into programari_analize
+values (1, TO_DATE('12-05-2022 12:30','DD-MM-YYYY hh:mi'), 1,200, 1 );
+insert into programari_analize
+values (2, TO_DATE('12-05-2022 12:30','DD-MM-YYYY hh:mi'), 2,201, 2 );
+insert into programari_analize
+values (3, TO_DATE('12-05-2022 12:30','DD-MM-YYYY hh:mi'), 3,202, 3 );
+insert into programari_analize
+values (4, TO_DATE('12-05-2022 12:30','DD-MM-YYYY hh:mi'), 4,203, 4 );
+insert into programari_analize
+values (5, TO_DATE('12-05-2022 12:30','DD-MM-YYYY hh:mi'), 5,204, 5 );
+
+-------------------------------SERVICII ----
+CREATE TABLE SERVICII ( id_serviciu number(5) primary key,
+                        nume varchar(200) not null,
+                        pret float(4),
+                        id_sectie number(5),
+                        foreign key(id_sectie) references sectie_clinica(cod_sectie));
+update 
+servicii
+set pret = pret * 1.19
+where id_sectie in 
+(select cod_sectie 
+from sectie_clinica
+where sectie_clinica.denumire like 'O%');
+
+drop table servicii;
+select *
+from servicii;
+insert into servicii
+values (1, 'Consult si analize medicale complete pentru operatii', 120.5, 20);
+
+insert into servicii
+values (2, 'Consult si analize medicale complete pentru stabilirea unui diagnostic ortopedic', 140, 21);
+
+insert into servicii
+values (3, 'Consult si analize medicale complete pentru stabilirea unui diagnostic oncologic', 450, 22);
+
+insert into servicii
+values (4, 'Consult si analize medicale complete pentru stabilirea unui diagnostic pediatric', 150, 23);
+
+insert into servicii
+values (5, 'Consult si analize medicale complete pentru stabilirea unui diagnostic al nou-nascutilor', 440, 24);
+
+--------------------M2M_PROGRAMARI_SERVICII-----------
+CREATE TABLE CONSULT_SERVICII (id_consult_servicii number(5) primary key,
+                                     id_programare_consult number(5),
+                                     foreign key(id_programare_consult) references programari_consult(id_programare),
+                                     id_serviciu number(5),
+                                     foreign key(id_serviciu) references SERVICII(id_serviciu)
+                                     );
+
+select *
+from consult_servicii;
+insert into consult_servicii
+values (1, 1, 1);
+insert into consult_servicii
+values (2, 2, 2);
+insert into consult_servicii
+values (3, 3, 3);
+insert into consult_servicii
+values (4, 4, 4);
+insert into consult_servicii
+values (5, 5, 5);
+insert into consult_servicii
+values (6, 6, 6);
+-------------------M2M_ANALIZE_SERVICII--------
+CREATE TABLE ANALIZE_SERVICII ( id_analiza_servicii number(5) primary key,
+                                id_programare_analiza number(5),
+                                foreign key(id_programare_analiza) references programari_analize(id_analiza),
+                                id_serviciu number(5),
+                                foreign key(id_serviciu) references SERVICII(id_serviciu)
+                                );
+drop table analize_servicii;
+select *
+from analize_servicii;
+insert into analize_servicii
+values (1, 1, 1);
+insert into analize_servicii
+values (2, 2, 2);
+insert into analize_servicii
+values (3, 3, 3);
+insert into analize_servicii
+values (4, 4, 4);
+insert into analize_servicii
+values (5, 5, 5);
